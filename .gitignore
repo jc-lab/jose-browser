@@ -110,3 +110,5 @@ dist
 !/.yarn/releases
 !/.yarn/sdks
 .pnp.*
+
+lib

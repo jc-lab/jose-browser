@@ -9,8 +9,6 @@ import {
   compactVerify, makeCompactSign
 } from './extended/compact';
 
-
-
 export function extendJose(input?: JoseType): JoseType {
   const joseImplementation = input || require('jose');
   const newJose: JoseType = Object.assign({}, joseImplementation);
