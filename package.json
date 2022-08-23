@@ -11,6 +11,10 @@
     "test:node": "yarn run jest --collectCoverage --coverageDirectory=coverage --ci",
     "test:browser": "yarn run jest --ci --config jest-browser.config.js --env=./test/browser-env.js"
   },
+  "files": [
+    "lib",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jc-lab/jose-browser.git"
