@@ -14,15 +14,32 @@ export interface Ed25519Key extends KeyBase {
 
 export function ed25519ImportKey(jwk: JWK): Promise<Ed25519Key> {
   const isPrivate = !!jwk.d;
-  const key: Ed25519Key = {
+  const key: Partial<Ed25519Key> = {
     type: isPrivate ? 'private' : 'public',
-    [KeyTypeSymbol]: 'ed25519',
-    x: Buffer.from(jwk.x, 'base64')
+    [KeyTypeSymbol]: 'ed25519'
   };
-  if (isPrivate) {
-    key.d = Buffer.from(jwk.d, 'base64');
-  }
-  return Promise.resolve(key);
+
+  return Promise.resolve()
+    .then(() => {
+      if (isPrivate) {
+        key.d = Buffer.from(jwk.d, 'base64');
+        return ed.getPublicKey(key.d)
+          .then((x) => {
+            key.x = x
+          });
+      }
+    })
+    .then(() => {
+      if (!key.x) {
+        if (!jwk.x) {
+          return Promise.reject(new Error('required \'x\''));
+        }
+
+        key.x = Buffer.from(jwk.x, 'base64');
+      }
+
+      return Promise.resolve(key as Ed25519Key);
+    });
 }
 
 export function ed25519Sign(key: any, message: Uint8Array): Promise<Uint8Array> {
