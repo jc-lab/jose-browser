@@ -1,5 +1,6 @@
 import * as joseOriginal from 'jose';
-import * as src from '../src';
+import { extendJose } from '../src';
+const joseNew = extendJose(joseOriginal);
 
 const sampleKey = {
   pub: {
@@ -17,7 +18,6 @@ const sampleKey = {
   }
 };
 
-const joseNew = src.extendJose(joseOriginal);
 
 const payload = Buffer.from('HELLO WORLD');
 

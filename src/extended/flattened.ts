@@ -35,9 +35,9 @@ const overrideVerifiers: Record<string, VerifyFunction> = {
   'EdDSA': ed25519Verify
 };
 
-export function flattenedVerify(jose: JoseType, jws: FlattenedJWSInput, key: KeyLike | Uint8Array, options?: VerifyOptions): Promise<FlattenedVerifyResult>;
-export function flattenedVerify(jose: JoseType, jws: FlattenedJWSInput, getKey: FlattenedVerifyGetKey, options?: VerifyOptions): Promise<FlattenedVerifyResult & ResolvedKey>;
-export function flattenedVerify(jose: JoseType, jws: FlattenedJWSInput, keyOrGet: KeyLike | Uint8Array | FlattenedVerifyGetKey, options?: VerifyOptions): Promise<FlattenedVerifyResult | (FlattenedVerifyResult & ResolvedKey)> {
+export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: FlattenedJWSInput, key: KeyLike | Uint8Array, options?: VerifyOptions): Promise<FlattenedVerifyResult>;
+export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: FlattenedJWSInput, getKey: FlattenedVerifyGetKey, options?: VerifyOptions): Promise<FlattenedVerifyResult & ResolvedKey>;
+export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: FlattenedJWSInput, keyOrGet: KeyLike | Uint8Array | FlattenedVerifyGetKey, options?: VerifyOptions): Promise<FlattenedVerifyResult | (FlattenedVerifyResult & ResolvedKey)> {
   if (!isObject(jws)) {
     return Promise.reject(new jose.errors.JWSInvalid('Flattened JWS must be an object'));
   }
@@ -136,7 +136,7 @@ export function flattenedVerify(jose: JoseType, jws: FlattenedJWSInput, keyOrGet
   return jose.flattenedVerify.apply(null, [jws, keyOrGet, options]);
 }
 
-export function makeFlattenedSign(jose: JoseType): typeof FlattenedSign {
+export function makeFlattenedSign(jose: JoseType, joseExtended: JoseType): typeof FlattenedSign {
   class NewFlattenedSign extends jose.FlattenedSign {
     sign(key: KeyLike | Uint8Array, options?: SignOptions): Promise<FlattenedJWS> {
       const _protectedHeader = (this as any)._protectedHeader;

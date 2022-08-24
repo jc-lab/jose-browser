@@ -13,11 +13,11 @@ export function extendJose(input?: JoseType): JoseType {
   const joseImplementation = input || require('jose');
   const newJose: JoseType = Object.assign({}, joseImplementation);
 
-  newJose.importJWK = importJWK.bind(this, newJose);
-  newJose.flattenedVerify = flattenedVerify.bind(null, newJose);
-  newJose.compactVerify = compactVerify.bind(null, newJose);
-  newJose.FlattenedSign = makeFlattenedSign(newJose);
-  newJose.CompactSign = makeCompactSign(newJose);
+  newJose.importJWK = importJWK.bind(this, joseImplementation, newJose);
+  newJose.flattenedVerify = flattenedVerify.bind(null, joseImplementation, newJose);
+  newJose.compactVerify = compactVerify.bind(null, joseImplementation, newJose);
+  newJose.FlattenedSign = makeFlattenedSign(joseImplementation, newJose);
+  newJose.CompactSign = makeCompactSign(joseImplementation, newJose);
 
   return newJose;
 }
