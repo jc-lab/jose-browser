@@ -24,11 +24,13 @@ yarn add jose-browser jose
 
 ```typescript
 import * as joseOriginal from 'jose';
-const jose = src.extendJose(joseOriginal);
+import { extendJose } from 'jose-browser';
 
-// joseNew.importJWK
-// joseNew.CompactSign
-// joseNew.compactVerify
+const jose = extendJose(joseOriginal);
+
+// jose.importJWK
+// jose.CompactSign
+// jose.compactVerify
 // ...
 
 ```
