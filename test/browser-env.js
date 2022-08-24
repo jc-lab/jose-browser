@@ -15,6 +15,7 @@ class CustomTestEnvironment extends Environment {
             TextEncoder: TextEncoder,
             TextDecoder: TextDecoder,
             crypto: crypto, // require('@peculiar/webcrypto')
+            CryptoKey: webcrypto.CryptoKey,
             Uint8Array: Uint8Array
           });
         }
