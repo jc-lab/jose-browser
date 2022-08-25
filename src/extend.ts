@@ -1,7 +1,10 @@
 import {
   JoseType
 } from './types';
-import {importJWK} from './extended/jwk';
+import {
+  importJWK,
+  exportJWK
+} from './extended/jwk';
 import {
   flattenedVerify, makeFlattenedSign
 } from './extended/flattened';
@@ -14,6 +17,7 @@ export function extendJose(input?: JoseType): JoseType {
   const newJose: JoseType = Object.assign({}, joseImplementation);
 
   newJose.importJWK = importJWK.bind(this, joseImplementation, newJose);
+  newJose.exportJWK = exportJWK.bind(this, joseImplementation, newJose);
   newJose.flattenedVerify = flattenedVerify.bind(null, joseImplementation, newJose);
   newJose.compactVerify = compactVerify.bind(null, joseImplementation, newJose);
   newJose.FlattenedSign = makeFlattenedSign(joseImplementation, newJose);

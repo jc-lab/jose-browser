@@ -18,7 +18,6 @@ const sampleKey = {
   }
 };
 
-
 const payload = Buffer.from('HELLO WORLD');
 
 describe('eddsa-static', () => {
@@ -29,6 +28,18 @@ describe('eddsa-static', () => {
     });
     expect(Buffer.from((privateKey as any).x as Uint8Array).toString('hex'))
       .toEqual(Buffer.from(sampleKey.pub.x, 'base64').toString('hex'))
+  });
+
+  it('exportJWK: private', async () => {
+    const privateKey = await joseNew.importJWK(sampleKey.pri);
+    const jwk = await joseNew.exportJWK(privateKey);
+    expect(jwk).toEqual(sampleKey.pri);
+  });
+
+  it('exportJWK: public', async () => {
+    const privateKey = await joseNew.importJWK(sampleKey.pub);
+    const jwk = await joseNew.exportJWK(privateKey);
+    expect(jwk).toEqual(sampleKey.pub);
   });
 
   it('sign-and-verify', async () => {

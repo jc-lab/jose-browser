@@ -29,3 +29,22 @@ export function concat(...buffers: Uint8Array[]): Uint8Array {
   })
   return buf
 }
+
+export function base64ToUrlSafe(input: string): string {
+  return input
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+export function base64FromUrlSafe(input: string): string {
+  let output = input
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+  let pad = output.length % 4;
+  if (pad > 0) {
+    pad = 4 - pad;
+    output += '='.repeat(pad);
+  }
+  return output;
+}

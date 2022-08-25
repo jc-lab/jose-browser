@@ -19,21 +19,7 @@ import {
   encoder,
   isObject
 } from './utils';
-import {
-  ed25519Sign,
-  ed25519Verify
-} from './eddsa';
-import {
-  SignFunction,
-  VerifyFunction
-} from './types';
-
-const overrideSigners: Record<string, SignFunction> = {
-  'EdDSA': ed25519Sign
-};
-const overrideVerifiers: Record<string, VerifyFunction> = {
-  'EdDSA': ed25519Verify
-};
+import algorithms from './algorithms';
 
 export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: FlattenedJWSInput, key: KeyLike | Uint8Array, options?: VerifyOptions): Promise<FlattenedVerifyResult>;
 export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: FlattenedJWSInput, getKey: FlattenedVerifyGetKey, options?: VerifyOptions): Promise<FlattenedVerifyResult & ResolvedKey>;
@@ -77,9 +63,7 @@ export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: Fla
     ...jws.header
   }
 
-  const { alg } = joseHeader
-
-  if (typeof alg !== 'string' || !alg) {
+  if (typeof joseHeader.alg !== 'string' || !joseHeader.alg) {
     return Promise.reject(new jose.errors.JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid'));
   }
 
@@ -87,8 +71,8 @@ export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: Fla
     return Promise.reject(new jose.errors.JWSInvalid('JWS Payload must be a string'));
   }
 
-  const overrideFunction = overrideVerifiers[alg];
-  if (overrideFunction) {
+  const algorithm = algorithms.find(a => a.checkHeader(joseHeader));
+  if (algorithm) {
     let resolvedKey: any = false
     return Promise.resolve()
       .then(() => {
@@ -109,7 +93,7 @@ export function flattenedVerify(jose: JoseType, joseExtended: JoseType, jws: Fla
           typeof jws.payload === 'string' ? encoder.encode(jws.payload) : jws.payload,
         );
         const signature = jose.base64url.decode(jws.signature);
-        return ed25519Verify(key, signature, data);
+        return algorithm.verify(key, signature, data);
       })
       .then((verified) => {
         if (!verified) {
@@ -154,10 +138,8 @@ export function makeFlattenedSign(jose: JoseType, joseExtended: JoseType): typeo
         ..._unprotectedHeader
       }
 
-      const { alg } = joseHeader;
-
-      const overrideFunction = overrideSigners[alg];
-      if (overrideFunction) {
+      const algorithm = algorithms.find(a => a.checkHeader(joseHeader));
+      if (algorithm) {
         let protectedHeader: Uint8Array;
         if (_protectedHeader) {
           protectedHeader = encoder.encode(jose.base64url.encode(JSON.stringify(_protectedHeader)))
@@ -168,7 +150,7 @@ export function makeFlattenedSign(jose: JoseType, joseExtended: JoseType): typeo
         const payload = encoder.encode(jose.base64url.encode(_payload as Uint8Array));
         const data = concat(protectedHeader, encoder.encode('.'), payload);
 
-        return overrideFunction(key, data)
+        return algorithm.sign(key, data)
           .then((signature) => {
             const jws: FlattenedJWS = {
               signature: jose.base64url.encode(signature),
